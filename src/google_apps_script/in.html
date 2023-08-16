@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Document</title>
+
+    <style>
+        .box {
+            background-color: white;
+            border-radius: 5px;
+            margin: 0px;
+            margin-bottom: 15px;
+            padding: 10px;
+        }
+
+        .box p {
+            margin: 0px;
+            margin-top: 7px;
+        }
+
+        .score {
+            background-color: #faa;
+        }
+    </style>
+
+    <script>
+        window.onload = () => {
+            let text = ""
+            for (let i = 1; i <= 39; i++ ) {
+                text += `<br><b style="margin-right: 5px;">${i}號</b><select class="student_state" id="student_state_${i}"><option value="normal" selected></option><option value="absent">缺考</option><option value="unpaid">缺交</option></select>\n<input type="number" id="${i}" class="score" onchange="change_color(this)" state="normal">\n`
+            }
+            text += `<br>\n<br>`
+            document.getElementById("form").innerHTML = text;
+        }
+    </script>
+
+</head>
+
+<body style="background-color: #afa;">
+    <div id="submit_check" style="position: absolute; background-color: rgba(0, 0, 0, 0.5); width: 100%; height: 100%; margin: 0px; top: 0px; left: 0px; display: none;">
+        <div class="box" style="margin: auto; margin: 2%; background-color: white; height: 90%; width: 90%; box-shadow: 12px 12px 7px rgba(255, 255, 255, 0.7);">
+            <h1>成績確認</h1>
+            <div id="check_content" class="box" style="background-color: rgb(229, 229, 229); max-height: 75%; overflow-y: auto;">
+                <table border="3">
+                    <thead>
+                        <tr>
+                            <td>座號</td><td>分數</td><td style="width: 100px;">狀態</td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <style>
+                #check_content table {
+                    border-collapse:collapse;
+                    font-size: 18px;
+                }
+            </style>
+            <div id="submit_delay" style="background-color: rgb(255, 21, 0); color: white; border-radius: 3px;display: inline; padding: 5px; width: auto; float: right; cursor: pointer;  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5)">
+                取消
+            </div>
+            <div id="submit_checked" style="background-color: rgb(0, 115, 255); color: white; border-radius: 3px;display: inline; padding: 5px; width: auto; float: right; cursor: pointer; margin-right: 5PX;  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5)">
+                確認送出
+            </div>
+        </div>
+    </div>
+
+
+    <div class="box" style="width: 190px; margin: auto; margin-top: 15px; margin-bottom: 15px;">
+        <p>快速登記</p>
+        <p>座號</p>
+        <input type="number" id="n">
+        <p>分數</p>
+        <input type="number" id="s">
+        <input type="button" value="登記" onclick="fuc(this)">
+
+    </div>
+    <script>
+        function fuc(e) {
+            num = document.getElementById("n").value
+            sco = document.getElementById("s").value
+            if (num == undefined || sco == undefined || num > 40) {
+                alert("error")
+                return
+            }
+            document.getElementById(num.toString()).value = sco
+            document.getElementById(num.toString()).style.backgroundColor = "#afa"
+
+            document.getElementById("n").focus()
+
+            document.getElementById("n").value = ""
+            document.getElementById("s").value = ""
+        }
+
+    </script>
+    <div class="box" style="width: 190px; margin: auto">
+        <div id="submited" style="display: none; background-color: lightgreen; padding: 5px"><p>本次成績已送出✅</p></div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="higher_then_hundred_warning" checked>
+            <label class="form-check-label" for="higher_then_hundred_warning" title="超過一百會變紅並且維持100分">
+                啟用破百警告
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="lower_then_zero_warning" checked>
+            <label class="form-check-label" for="lower_then_zero_warning" title="低於零分會變紅並且維持0分">
+                啟用負分警告
+            </label>
+        </div>
+        <p>項目</p>
+        <input type="text" id="name" value="考試">
+        <p>科目</p>
+        <select id="subject">
+            <option value="國文">國文</option>
+            <option value="數學">數學</option>
+            <option value="英文">英文</option>
+            <option value="物理">物理</option>
+            <option value="化學">化學</option>
+            <option value="其他" selected>其他</option>
+        </select>
+        <div id="form">
+        </div>
+        <a id="submit" href="javascript:scroll(0,0)" style="background-color: rgb(0, 115, 255); color: white; border-radius: 3px;display: inline; padding: 5px; width: auto; cursor: pointer; margin-right: 5PX; text-decoration: none; box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5)">
+            送出
+        </a>
+        <input type="number" id="no" style="display: none">
+
+        <script>
+
+            // 設定學生狀態 正常 缺考 缺交
+            var state_code_to_chinese = {
+                "normal": "正常",
+                "absent": "缺考",
+                "unpaid": "缺交"
+            }
+            var student_states = document.getElementsByClassName("student_state");
+            for (var i = 0; i < student_states.length; i++) {
+                student_states[i].addEventListener('change', function() {
+                    var selectID = this.id;
+                    var student_number = selectID.split('_')[2];
+                    var input = document.getElementById(student_number);
+                    input.setAttribute("state", this.value);
+                    if (this.value == "normal") {
+                        input.value = "";
+                        input.setAttribute("type", "number");
+                        input.disabled = false;
+                    } else {
+                        input.setAttribute("type", "text");
+                        input.value = state_code_to_chinese[this.value];
+                        input.setAttribute("disabled", "disabled");
+                    }
+                    alert(`已將${student_number}號設為${state_code_to_chinese[this.value]}`);
+                });
+            }
+
+            function getValues() {
+                var cloData = [];
+                cloData.push(document.getElementById("subject").value)
+                cloData.push(document.getElementById("name").value)
+                for (i = 0; i < 39; i++) {
+                    input = document.getElementById((i + 1).toString());
+                    score = input.value;
+                    if (score == '') {
+                        score = '0'
+                    }
+                    cloData.push(score);
+                }
+                alert("已送出")
+                document.getElementById("submited").style.display = "block";
+                document.getElementById("submit_check").style.display = "none";            
+                console.log(cloData)
+                google.script.run.addData(cloData);
+                document.getElementById("form").reset();
+            };
+
+            document.getElementById("submit_checked").addEventListener("click", getValues);
+            document.getElementById("submit").addEventListener("click", ()=>{
+                document.getElementById("submit_check").style.display = "block";
+                let div = document.getElementById("check_content");
+                let table = ""
+                table += `<table border="3">`
+                table += `<thead><tr><td>座號</td><td>分數</td><td>狀態</td></tr></thead>`
+                table += `<tbody>`
+                for(let i=0; i<39; i = i+1){
+                    let score = document.getElementById(i+1).value;
+                    if (score == '') {
+                        score = '0'
+                    }
+                    table += `<tr>`
+                    table += `<td>${i+1}</td>`
+                    table += `<td>${score}</td>`
+                    if(document.getElementById(i+1).value == ''){
+                        table += `<td style="background-color: rgb(255, 0, 0); color: white;">未登記</td>`
+                    }else if (score == 100 && document.getElementById(i+1).style.backgroundColor == 'rgb(255, 170, 170)'){
+                        table += `<td style="background-color: rgb(250, 255, 15); color: black;">超過100自動降為100</td>`
+                    }else if (score == 0 && document.getElementById(i+1).style.backgroundColor == 'rgb(255, 170, 170)'){
+                        table += `<td style="background-color: rgb(250, 255, 15); color: black;">低於0自動升為0</td>`
+                    }else if (score == "缺考"){
+                        table += `<td style="background-color: rgb(250, 255, 15); color: black;">缺考</td>`
+                    }else if (score == "缺交"){
+                        table += `<td style="background-color: rgb(250, 255, 15); color: black;">缺交</td>`
+                    }else{
+                        table += `<td style="background-color: rgb(44, 193, 67); color: white;">登記完成</td>`
+                    }
+                    table += `</tr>`
+                }
+                table += `</tbody>`
+                table += `</table>`
+                div.innerHTML = table;
+
+            });
+
+            var lower_then_zero_warning = true;
+            var higher_then_hundred_warning = true;
+            document.getElementById("lower_then_zero_warning").addEventListener("click", function () {
+                lower_then_zero_warning = !lower_then_zero_warning;
+            });
+            document.getElementById("higher_then_hundred_warning").addEventListener("click", function () {
+                higher_then_hundred_warning = !higher_then_hundred_warning;
+            });
+
+            function change_color(t) {
+                n = document.getElementById('no').value;
+                if (higher_then_hundred_warning && t.value > 100) {
+                    t.value = 100;
+                    t.style.backgroundColor = "#faa";
+                    return;
+                } else if (lower_then_zero_warning && t.value < 0) {
+                    t.value = 0;
+                    t.style.backgroundColor = "#faa";
+                    return;
+                }
+
+                if (t.value != n) {
+                    t.style.backgroundColor = "#afa"
+                } else {
+                    t.style.backgroundColor = "#faa"
+                }
+
+            }
+
+            document.getElementById("submit_delay").addEventListener("click", ()=>{
+                document.getElementById("submit_check").style.display = "none";
+            })
+        </script>
+</body>
+
+</html>

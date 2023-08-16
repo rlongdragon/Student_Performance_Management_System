@@ -1,0 +1,11 @@
+.box {
+    background-color: white;
+    border-radius: 5px;
+    margin: 0px;
+    margin-bottom: 15px;
+    padding: 10px;
+}
+.box p {
+    margin: 0px;
+    margin-top: 7px;
+}
